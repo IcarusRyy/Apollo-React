@@ -1,0 +1,4 @@
+# pnpm-workspace.yaml 定义了工作空间的根目录，并能够使您从工作空间中包含/排除目录。 默认包含所有子目录。
+# 意思就是根目录下的packages目录下的直接文件就是mono repo的子项目
+packages:
+  - 'packages/*'
