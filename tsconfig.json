@@ -23,6 +23,9 @@
     "noEmitOnError": true,
     "experimentalDecorators": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": "./packages"
+    "baseUrl": "./packages",
+    "paths": {
+      "hostConfig": ["./react-reconciler/src/hostConfig.ts"]
+    }
   }
 }

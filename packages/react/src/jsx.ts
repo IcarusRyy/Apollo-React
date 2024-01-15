@@ -22,6 +22,13 @@ const ReactElement = function (type: Type, key: Key, ref: Ref, props: Props): Re
   }
   return element
 }
+/**
+ *
+ * @param type 组件的type ElementType
+ * @param config 组件的配置 props
+ * @param maybeChildren  可能传递 可能不传递 可以多个
+ * @returns
+ */
 
 export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
   let key: Key = null
@@ -42,6 +49,7 @@ export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
       }
       continue
     }
+    // 如果prop是config自己的属性，则赋值给props
     if ({}.hasOwnProperty.call(config, prop)) {
       props[prop] = val
     }
