@@ -1,6 +1,8 @@
 import beginWork from './beginWork'
+import { commitMutationEffects } from './commitWork'
 import completeWork from './completeWork'
 import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber'
+import { MutationMask, NoFlags } from './fiberFlags'
 import { HostRoot } from './workTag'
 
 let workInProgress: FiberNode | null = null
@@ -93,6 +95,7 @@ function renderRoot(root: FiberRootNode) {
       }
       workInProgress = null
     }
+    // eslint-disable-next-line no-constant-condition
   } while (true)
 
   const finishedWork = root.current.alternate
@@ -100,4 +103,32 @@ function renderRoot(root: FiberRootNode) {
   // commit 流程的入口
   // 根据 生成的 wip fiberNode tree 和 tree 中的 flags 执行具体的dom 操作
   commitRoot(root)
+}
+
+function commitRoot(root: FiberRootNode) {
+  const finishedWork = root.finishedWork
+  if (finishedWork === null) {
+    return
+  }
+  if (__DEV__) {
+    console.warn('commit阶段开始：', finishedWork)
+  }
+  // 重置
+  root.finishedWork = null
+
+  // 判断是否存在3个子阶段需要执行的操作
+
+  // root本身的flags和root的subtingFlags
+  const subtreeHasEffect = (finishedWork.subtreeFlags & MutationMask) !== NoFlags
+  const rootHasEffect = (finishedWork.flags & MutationMask) !== NoFlags
+
+  if (subtreeHasEffect || rootHasEffect) {
+    // beforeMutation
+    // mutation
+    commitMutationEffects(finishedWork)
+    root.current = finishedWork // fiber树切换 完成在mutation之后 layout阶段之前 因为对于类组件而言，执行componentWillUnmount的时候，current fiber tree依然对应真实的dom树，在执行componentDidMount和componentDidUpdate的时候 current fiber tree 已经对应本次更新后的fiber tree
+    // layout
+  } else {
+    root.current = finishedWork // fiber树切换
+  }
 }
